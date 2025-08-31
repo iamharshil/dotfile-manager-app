@@ -1,71 +1,267 @@
-import { ModeToggle } from "@/components/toggle-theme";
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { GrainBackground } from "@/components/ui/grain-bg";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Highlight, themes } from "prism-react-renderer";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const previewCode = `// Save and share snippets effortlessly
+function greet(name: string) {
+  return \`Hello, \${name}!\`
+}
+
+// Tag your snippet to find it later
+// tags: ['greeting', 'typescript', 'demo']
+
+console.log(greet("World"))`;
+
+export default function LandingPage() {
+	const [copied, setCopied] = useState(false);
+	const [isDark, setIsDark] = useState(false);
+
+	const onCopy = useCallback(async () => {
+		try {
+			await navigator.clipboard.writeText(previewCode);
+			setCopied(true);
+			toast.success("Code copied to clipboard!");
+			setTimeout(() => setCopied(false), 1200);
+		} catch {}
+	}, []);
+
+	useEffect(() => {
+		// Detect dark mode based on the .dark class on <html>
+		const root = document.documentElement;
+		const update = () => setIsDark(root.classList.contains("dark"));
+		update();
+		const observer = new MutationObserver(update);
+		observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+		return () => observer.disconnect();
+	}, []);
+
+	// Motion helpers
+	const fadeUp = { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 } };
+	const fade = { initial: { opacity: 0 }, animate: { opacity: 1 } };
+	const prismTheme = isDark ? themes.dracula : themes.duotoneLight;
+
 	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-				<ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-				</ol>
+		<main className="relative min-h-dvh text-white">
+			{/* Background */}
+			<GrainBackground />
 
-				<div className="flex gap-4 items-center flex-col sm:flex-row">
-					<a
-						className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-						href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<Image className="dark:invert" src="/vercel.svg" alt="Vercel logomark" width={20} height={20} />
-						Deploy now
-					</a>
-					<a
-						className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
-				</div>
-			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
+			<section className="mx-auto max-w-6xl px-4 pb-16 pt-10 md:px-8 md:pb-24 md:pt-16">
+				{/* Hero */}
+				<motion.div
+					{...fadeUp}
+					transition={{ duration: 0.4, ease: "easeOut" }}
+					className="relative overflow-hidden"
 				>
-					<Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
+					<GlassCard className="p-6 md:p-10" variant="purple">
+						<div className="flex flex-col gap-6">
+							<div className="space-y-3">
+								<span className="inline-block rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs tracking-wide text-zinc-300">
+									Modern • Private • Fast
+								</span>
+								<h1 className="text-balance text-3xl font-semibold md:text-5xl">
+									The fastest way to save snippets and developer configs
+								</h1>
+								<p className="text-pretty text-sm leading-relaxed text-zinc-300 md:text-base">
+									Capture reusable code, store VS Code and Neovim settings, and share with your team.
+									Powerful tags and instant search wrapped in a polished, mobile‑first glass UI.
+								</p>
+							</div>
+							<div className="flex flex-col gap-3 sm:flex-row">
+								<Link href="/dashboard">
+									<Button
+										size="lg"
+										className="w-full bg-[#7c3aed] text-white hover:bg-[#6d28d9] sm:w-auto"
+									>
+										Get Started
+									</Button>
+								</Link>
+								<Link href="/snippets">
+									<Button
+										size="lg"
+										variant="secondary"
+										className="w-full border-white/15 bg-white/[0.06] text-white hover:bg-white/[0.1] sm:w-auto"
+									>
+										Browse Snippets
+									</Button>
+								</Link>
+								<Link href="/dashboard/configs">
+									<Button
+										size="lg"
+										variant="outline"
+										className="w-full border-white/15 bg-transparent text-white hover:bg-white/[0.06] sm:w-auto"
+									>
+										Explore Configs
+									</Button>
+								</Link>
+							</div>
+							{/* Trust row */}
+							<div className="flex flex-wrap items-center gap-2 text-xs text-zinc-300">
+								<span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1">
+									Private by default
+								</span>
+								<span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1">
+									Tag & search
+								</span>
+								<span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1">
+									Share securely
+								</span>
+							</div>
+						</div>
+					</GlassCard>
+				</motion.div>
+
+				{/* Feature grid */}
+				<motion.div
+					{...fadeUp}
+					transition={{ duration: 0.45, delay: 0.05, ease: "easeOut" }}
+					className="mt-6 grid gap-4 md:grid-cols-3"
 				>
-					<Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-					Examples
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
+					{[
+						{
+							title: "Snippets",
+							desc: "Organize reusable code by language, tags, and folders.",
+							href: "/snippets",
+						},
+						{
+							title: "Configs",
+							desc: "Version and share VS Code or Neovim configs in one place.",
+							href: "/dashboard/configs",
+						},
+						{
+							title: "Fast Search",
+							desc: "Filter by tags, language, and title to find things instantly.",
+							href: "/dashboard",
+						},
+					].map((f) => (
+						<Link key={f.title} href={f.href} className="group">
+							<GlassCard className="p-5 md:p-6 transition" variant="purple">
+								<h3 className="text-lg font-medium">{f.title}</h3>
+								<p className="mt-1 text-sm text-zinc-300">{f.desc}</p>
+								<span className="mt-3 inline-block text-sm text-zinc-300 transition group-hover:text-white">
+									Open →
+								</span>
+							</GlassCard>
+						</Link>
+					))}
+				</motion.div>
+
+				{/* How it works */}
+				<motion.div
+					{...fadeUp}
+					transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
+					className="mt-8 grid gap-4 md:grid-cols-3"
 				>
-					<Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-					Go to nextjs.org →
-				</a>
-			</footer>
-		</div>
+					{[
+						{
+							step: "1",
+							title: "Capture",
+							desc: "Paste your code or drop a config file. Add a title, tags, and language.",
+						},
+						{
+							step: "2",
+							title: "Organize",
+							desc: "Group by folders, apply tags, and keep everything searchable.",
+						},
+						{
+							step: "3",
+							title: "Share",
+							desc: "Share privately with teammates or publish read-only links.",
+						},
+					].map((s) => (
+						<GlassCard key={s.step} className="p-5 md:p-6" variant="purple">
+							<div className="flex items-center gap-3">
+								<span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-xs">
+									{s.step}
+								</span>
+								<h4 className="font-medium">{s.title}</h4>
+							</div>
+							<p className="mt-2 text-sm text-zinc-300">{s.desc}</p>
+						</GlassCard>
+					))}
+				</motion.div>
+
+				{/* Code preview with copy */}
+				<motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }} className="mt-8">
+					<GlassCard variant="purple">
+						<div className="flex items-center justify-between px-4 py-3 md:px-6">
+							<div className="text-sm text-zinc-300">Preview (TypeScript)</div>
+							<Button
+								size="sm"
+								variant="secondary"
+								onClick={onCopy}
+								className="border-white/15 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+							>
+								{copied ? "Copied" : "Copy"}
+							</Button>
+						</div>
+						<div className="px-4 pb-4 md:px-6 md:pb-6">
+							<pre className="overflow-auto rounded-xl border border-white/10 bg-black/30 text-xs leading-relaxed text-zinc-200">
+								{/* <code>{previewCode}</code> */}
+								<Highlight theme={prismTheme} code={previewCode} language="typescript">
+									{({ className: highlightClass, style, tokens, getLineProps, getTokenProps }) => (
+										<pre
+											className={cn(
+												highlightClass,
+												"m-0 p-4 text-sm leading-6 border rounded-xl",
+												"whitespace-pre"
+											)}
+											style={style}
+										>
+											{tokens.map((line, i) => (
+												<div key={i} {...getLineProps({ line })}>
+													{line.map((token, key) => (
+														<span key={key} {...getTokenProps({ token })} />
+													))}
+												</div>
+											))}
+										</pre>
+									)}
+								</Highlight>
+							</pre>
+						</div>
+					</GlassCard>
+				</motion.div>
+
+				{/* Final CTA */}
+				<motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }} className="mt-8">
+					<GlassCard className="p-6 md:p-8" variant="purple">
+						<div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+							<div>
+								<h2 className="text-balance text-xl font-semibold md:text-2xl">
+									Start organizing your dev knowledge
+								</h2>
+								<p className="mt-1 text-sm text-zinc-300">
+									Create your first snippet or import your editor configs in seconds.
+								</p>
+							</div>
+							<div className="flex gap-3">
+								<Link href="/snippets/new">
+									<Button size="lg" className="bg-[#7c3aed] text-white hover:bg-[#6d28d9]">
+										Create Snippet
+									</Button>
+								</Link>
+								<Link href="/dashboard/configs/new">
+									<Button
+										size="lg"
+										variant="secondary"
+										className="border-white/15 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+									>
+										Add Config
+									</Button>
+								</Link>
+							</div>
+						</div>
+					</GlassCard>
+				</motion.div>
+			</section>
+		</main>
 	);
 }
