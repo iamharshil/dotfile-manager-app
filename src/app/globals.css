@@ -120,3 +120,61 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.bg-purple {
+  background-color: #7961b1 !important;
+}
+
+
+.glass-button{
+  --radius: 16px;
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.35);
+  background:
+  linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  backdrop-filter: blur(14px) saturate(120%);
+  color: white;
+  font-weight:500;
+  text-decoration:none;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:
+  0 12px 34px rgba(0,0,0,.35), /* outer drop */
+  inset 0 0 16px rgba(255,255,255,.08), /* soft uniform inner glow */
+  inset 0 0 24px rgba(0,0,0,.25), /* soft dark inner depth */
+  inset 0 1px 1px rgba(255,255,255,.25); /* subtle highlight */
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.glass-button::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:var(--radius);
+  pointer-events:none;
+  }
+  
+  
+  .glass-button:hover{
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+  box-shadow:
+  0 14px 38px rgba(0,0,0,.32),
+  inset 0 0 16px rgba(255,255,255,.10),
+  inset 0 0 24px rgba(0,0,0,.25);
+  }
+  
+  
+  .glass-button:active{
+  transform: translateY(0);
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+  box-shadow:
+  0 6px 18px rgba(0,0,0,.35),
+  inset 0 0 12px rgba(255,255,255,.08),
+  inset 0 0 18px rgba(0,0,0,.28);
+  }
